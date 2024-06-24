@@ -74,6 +74,66 @@ class Bullet:
     def draw(self):
         screen.blit(self.image, self.rect.topleft)
 
+# Function to check for collisions
+def check_collision(rect1, rect2):
+    return rect1.colliderect(rect2)
+
+# Game loop
+def main():
+    player = Player(screen_width // 2, screen_height - 60)
+    enemies = [Enemy(random.randint(0, screen_width - 64), random.randint(-150, -50)) for _ in range(10)]
+    bullets = []
+    score = 0
+    clock = pygame.time.Clock()
+    
+    running = True
+    while running:
+        screen.fill(BLACK)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            player.move(-player.speed)
+        if keys[pygame.K_RIGHT]:
+            player.move(player.speed)
+        if keys[pygame.K_SPACE]:
+            if len(bullets) < 5:
+                bullets.append(Bullet(player.rect.centerx, player.rect.top))
+
+        player.draw()
+        
+        for bullet in bullets:
+            bullet.move()
+            bullet.draw()
+            if bullet.rect.y < 0:
+                bullets.remove(bullet)
+
+        for enemy in enemies:
+            enemy.move()
+            enemy.draw()
+            if enemy.rect.y > screen_height:
+                enemies.remove(enemy)
+                enemies.append(Enemy(random.randint(0, screen_width - 64), random.randint(-150, -50)))
+            
+            for bullet in bullets:
+                if check_collision(enemy.rect, bullet.rect):
+                    bullets.remove(bullet)
+                    enemies.remove(enemy)
+                    score += 1
+                    enemies.append(Enemy(random.randint(0, screen_width - 64), random.randint(-150, -50)))
+                    break
+
+        score_text = font.render(f"Score: {score}", True, WHITE)
+        screen.blit(score_text, (10, 10))
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+    sys.exit()
 
 if __name__ == "__main__":
     main()
