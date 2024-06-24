@@ -14,7 +14,7 @@ Clone the Repository:
 
 bash
 Copy code
-git clone https://github.com/your-username/space-invaders.git
+git clone https://github.com/ravi-hash/pygame
 Install Dependencies:
 
 Navigate into the project directory and install the required dependencies:
